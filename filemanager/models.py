@@ -13,6 +13,7 @@ from sqlalchemy.orm import sessionmaker
 
 Base = declarative_base()
 
+
 # ## Json as string Type
 class JsonType(types.TypeDecorator):
     impl = types.Unicode
@@ -50,14 +51,12 @@ class FileManager:
         self._engine = None
         self._session = None
 
-
     @property
     def engine(self):
         if self._engine is None:
             self._engine = create_engine(self._db_connection_string)
             Base.metadata.create_all(self._engine)
         return self._engine
-
 
     @contextmanager
     def session_scope(self):
@@ -74,7 +73,6 @@ class FileManager:
         finally:
             session.expunge_all()
             session.close()
-
 
     @staticmethod
     def object_as_dict(obj):
@@ -107,7 +105,6 @@ class FileManager:
                 sf.created_at = created_at
             s.add(sf)
 
-
     # ### READ API
     def get_file_info(self, bucket, object_name):
         with self.session_scope() as s:
@@ -120,22 +117,22 @@ class FileManager:
         with self.session_scope() as s:
             sf = s.query(func.sum(StoredFile.size).label('total'))\
                          .filter_by(owner=owner).first()
-            if sf is None:
-                return None
+            if sf is None or sf.total is None:
+                return 0
             return sf.total
 
     def get_total_size_for_dataset_id(self, dataset_id):
         with self.session_scope() as s:
             sf = s.query(func.sum(StoredFile.size).label('total')) \
                 .filter_by(dataset_id=dataset_id).first()
-            if sf is None:
-                return None
+            if sf is None or sf.total is None:
+                return 0
             return sf.total
 
     def get_total_size_for_flow_id(self, flow_id):
         with self.session_scope() as s:
             sf = s.query(func.sum(StoredFile.size).label('total')) \
-                .filter_by(flow_id=flow_id).first()
-            if sf is None:
-                return None
+                .filter_by(last_flow_id=flow_id).first()
+            if sf is None or sf.total is None:
+                return 0
             return sf.total

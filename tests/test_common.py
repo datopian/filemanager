@@ -30,6 +30,10 @@ FILES = [
     ('ow1/ds1/3', 'f4', 11),
 ]
 
+files_on_disk = {}
+for fs in FILES:
+    files_on_disk['/'.join(fs[0].split('/')[:2] + [fs[1]])] = (fs[0], fs[2])
+
 now = datetime.datetime.now()
 @pytest.fixture()
 def full_db():
@@ -71,3 +75,57 @@ def test_get_file_info(full_db: FileManager, sf):
         'size': size,
         'created_at': now
     }
+
+get_total_size_for_owner_expected = [
+    (owner,
+     sum(ff[1]
+         for filename, ff in files_on_disk.items()
+         if filename.startswith(owner)))
+    for owner
+    in set([fs_[0].split('/')[0]
+            for fs_ in FILES])]
+
+
+@pytest.mark.parametrize('owner,size', get_total_size_for_owner_expected)
+def test_get_total_size_for_owner(full_db: FileManager, owner, size):
+    assert full_db.get_total_size_for_owner(owner) == size
+
+get_total_size_for_dataset_id_expected = [
+    (dataset_id,
+     sum(ff[1]
+         for filename, ff in files_on_disk.items()
+         if filename.startswith(dataset_id)))
+    for dataset_id
+    in set(['/'.join(fs_[0].split('/')[:2])
+            for fs_ in FILES])]
+
+
+@pytest.mark.parametrize('dataset_id,size', get_total_size_for_dataset_id_expected)
+def test_get_total_size_for_dataset_id(full_db: FileManager, dataset_id, size):
+    assert full_db.get_total_size_for_dataset_id(dataset_id) == size
+
+get_total_size_for_flow_id_expected = [
+    (flow_id,
+     sum(ff[1]
+         for filename, ff in files_on_disk.items()
+         if ff[0] == flow_id))
+    for flow_id
+    in set(fs_[0] for fs_ in FILES)
+]
+
+
+@pytest.mark.parametrize('flow_id,size', get_total_size_for_flow_id_expected)
+def test_get_total_size_for_flow_id(full_db: FileManager, flow_id, size):
+    assert full_db.get_total_size_for_flow_id(flow_id) == size
+
+
+def test_get_total_size_for_unknown_owner(full_db: FileManager):
+    assert full_db.get_total_size_for_owner('unknown') == 0
+
+
+def test_get_total_size_for_unknown_dataset_id(full_db: FileManager):
+    assert full_db.get_total_size_for_dataset_id('unknown') == 0
+
+
+def test_get_total_size_for_unknown_flow_id(full_db: FileManager):
+    assert full_db.get_total_size_for_flow_id('unknown') == 0

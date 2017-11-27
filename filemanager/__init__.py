@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import io
 import os
+from .blueprint import make_blueprint
 from .models import FileManager
 
 VERSION_FILE = os.path.join(os.path.dirname(__file__), 'VERSION')

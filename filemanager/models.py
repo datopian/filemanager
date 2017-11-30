@@ -35,6 +35,7 @@ class StoredFile(Base):
     __tablename__ = 'storedfiles'
     bucket = Column(String, primary_key=True)
     object_name = Column(String, primary_key=True)
+    findability = Column(String)
     owner = Column(String)
     owner_id = Column(String)
     dataset_id = Column(String, index=True)
@@ -80,13 +81,14 @@ class FileManager:
                 for c in inspect(obj).mapper.column_attrs}
 
     # ### WRITE API
-    def add_file(self, bucket, object_name, owner, owner_id, dataset_id, flow_id, size, created_at):
+    def add_file(self, bucket, object_name, findability, owner, owner_id, dataset_id, flow_id, size, created_at):
         with self.session_scope() as s:
             sf = s.query(StoredFile).filter_by(bucket=bucket, object_name=object_name).first()
             if sf is None:
                 sf = StoredFile(
                     bucket=bucket,
                     object_name=object_name,
+                    findability = findability,
                     owner=owner,
                     owner_id=owner_id,
                     dataset_id=dataset_id,
@@ -99,6 +101,7 @@ class FileManager:
                 assert sf.owner == owner
                 assert sf.owner_id == owner_id
                 assert sf.dataset_id == dataset_id
+                sf.findability = findability
                 sf.last_flow_id = flow_id
                 sf.flow_ids = list(sorted(set(sf.flow_ids + [flow_id])))
                 sf.size = size
@@ -113,26 +116,35 @@ class FileManager:
                 return None
             return self.object_as_dict(sf)
 
-    def get_total_size_for_owner(self, owner):
+    def get_total_size_for_owner(self, owner, findability=None):
         with self.session_scope() as s:
             sf = s.query(func.sum(StoredFile.size).label('total'))\
-                         .filter_by(owner=owner).first()
+                         .filter_by(owner=owner)
+            if findability is not None:
+                sf = sf.filter_by(findability=findability)
+            sf = sf.first()
             if sf is None or sf.total is None:
                 return 0
             return sf.total
 
-    def get_total_size_for_dataset_id(self, dataset_id):
+    def get_total_size_for_dataset_id(self, dataset_id, findability=None):
         with self.session_scope() as s:
             sf = s.query(func.sum(StoredFile.size).label('total')) \
-                .filter_by(dataset_id=dataset_id).first()
+                .filter_by(dataset_id=dataset_id)
+            if findability is not None:
+                sf = sf.filter_by(findability=findability)
+            sf = sf.first()
             if sf is None or sf.total is None:
                 return 0
             return sf.total
 
-    def get_total_size_for_flow_id(self, flow_id):
+    def get_total_size_for_flow_id(self, flow_id, findability=None):
         with self.session_scope() as s:
             sf = s.query(func.sum(StoredFile.size).label('total')) \
-                .filter_by(last_flow_id=flow_id).first()
+                .filter_by(last_flow_id=flow_id)
+            if findability is not None:
+                sf = sf.filter_by(findability=findability)
+            sf = sf.first()
             if sf is None or sf.total is None:
                 return 0
             return sf.total

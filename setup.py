@@ -20,9 +20,7 @@ def read(*paths):
 # Prepare
 PACKAGE = 'filemanager'
 NAME = PACKAGE.replace('_', '-')
-INSTALL_REQUIRES = [
-    'sqlalchemy'
-]
+INSTALL_REQUIRES = read('requirements.txt').split('\n')
 TESTS_REQUIRE = [
     'pylama',
     'tox',

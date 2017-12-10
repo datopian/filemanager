@@ -56,7 +56,6 @@ class FileManager:
     def engine(self):
         if self._engine is None:
             self._engine = create_engine(self._db_connection_string)
-            Base.metadata.create_all(self._engine)
         return self._engine
 
     @contextmanager

@@ -50,11 +50,11 @@ def make_blueprint():
         'total_storage_for_owner',
         total_storage_for_owner, methods=['GET'])
     blueprint.add_url_rule(
-        'storage/dataset_id/<dataset_id>',
+        'storage/dataset_id/<path:dataset_id>',
         'total_storage_for_dataset_id',
         total_storage_for_dataset_id, methods=['GET'])
     blueprint.add_url_rule(
-        'storage/flow_id/<flow_id>',
+        'storage/flow_id/<path:flow_id>',
         'total_storage_for_flow_id',
         total_storage_for_flow_id, methods=['GET'])
 

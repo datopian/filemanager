@@ -54,6 +54,8 @@ return
 }
 ```
 
+An optional query parameter `findability` can be added to filter by findability, e.g. `?findability=unlisted`.
+
 ## Contributing
 
 Please read the contribution guideline:

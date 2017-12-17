@@ -19,7 +19,6 @@ def make_blueprint():
 
     def call(method, arg):
         ret = method(arg, findability=request.values.get('findability'))
-        print(request.values.get('findability'))
         ret = {
             'totalBytes': ret
         }

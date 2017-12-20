@@ -87,7 +87,7 @@ class FileManager:
                 sf = StoredFile(
                     bucket=bucket,
                     object_name=object_name,
-                    findability = findability,
+                    findability=findability,
                     owner=owner,
                     owner_id=owner_id,
                     dataset_id=dataset_id,

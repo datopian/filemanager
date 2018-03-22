@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask import request
 from flask_jsonpify import jsonpify
 
-from .models import FileManager, Base
+from .models import FileManager
 
 from .config import db_connection_string
 

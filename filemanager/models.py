@@ -47,9 +47,9 @@ class StoredFile(Base):
 
 class FileManager:
 
-    def __init__(self, db_connection_string):
+    def __init__(self, db_connection_string, engine=None):
         self._db_connection_string = db_connection_string
-        self._engine = None
+        self._engine = engine
         self._session = None
 
     @property

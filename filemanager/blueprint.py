@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask import request
 from flask_jsonpify import jsonpify
 
-from .models import FileManager, Base
+from .models import FileManager
 
 from .config import db_connection_string
 
@@ -12,7 +12,7 @@ def make_blueprint():
     """
 
     fm = FileManager(db_connection_string)
-    Base.metadata.create_all(fm.engine)
+    fm.init_db()
 
     # Create instance
     blueprint = Blueprint('filemanager', 'filemanager')

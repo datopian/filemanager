@@ -50,6 +50,7 @@ now = datetime.datetime.now()
 def full_db():
 
     fm = FileManager('sqlite://')
+    fm.init_db()
 
     for flow_id, object_name, size in FILES:
         parts = flow_id.split('/')

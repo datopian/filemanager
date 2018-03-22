@@ -47,9 +47,9 @@ class StoredFile(Base):
 
 class FileManager:
 
-    def __init__(self, db_connection_string):
+    def __init__(self, db_connection_string, engine=None):
         self._db_connection_string = db_connection_string
-        self._engine = None
+        self._engine = engine
         self._session = None
 
     @property
@@ -78,6 +78,9 @@ class FileManager:
     def object_as_dict(obj):
         return {c.key: getattr(obj, c.key)
                 for c in inspect(obj).mapper.column_attrs}
+
+    def init_db(self):
+        Base.metadata.create_all(self.engine)
 
     # ### WRITE API
     def add_file(self, bucket, object_name, findability, owner, owner_id, dataset_id, flow_id, size, created_at):

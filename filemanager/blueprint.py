@@ -12,7 +12,7 @@ def make_blueprint():
     """
 
     fm = FileManager(db_connection_string)
-    Base.metadata.create_all(fm.engine)
+    fm.init_db()
 
     # Create instance
     blueprint = Blueprint('filemanager', 'filemanager')

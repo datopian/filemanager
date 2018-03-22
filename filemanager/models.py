@@ -79,6 +79,9 @@ class FileManager:
         return {c.key: getattr(obj, c.key)
                 for c in inspect(obj).mapper.column_attrs}
 
+    def init_db(self):
+        Base.metadata.create_all(self.engine)
+
     # ### WRITE API
     def add_file(self, bucket, object_name, findability, owner, owner_id, dataset_id, flow_id, size, created_at):
         with self.session_scope() as s:

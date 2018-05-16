@@ -12,6 +12,7 @@ env:
     - DEPLOY_COMMIT_MESSAGE="automatic update of dhq-filemanager"
     - DEPLOY_GIT_EMAIL=dhq-deployer@null.void
     - DEPLOY_GIT_USER=dhq-deployer
+    - TOXENV="py${PYTHON_VERSION//./}"
 
 services:
   - docker
@@ -21,10 +22,6 @@ language:
 
 python:
   - 3.6
-
-env:
-  global:
-    - TOXENV="py${PYTHON_VERSION//./}"
 
 install:
   - make install

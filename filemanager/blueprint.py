@@ -1,5 +1,5 @@
 from flask import Blueprint
-from flask import request
+from flask import request, abort
 from flask_jsonpify import jsonpify
 
 from .models import FileManager
@@ -26,6 +26,8 @@ def make_blueprint():
 
     def file_info(bucket, object_name):
         ret = fm.get_file_info(bucket, object_name)
+        if ret is None:
+            abort(404)
         if ret.get('created_at'):
             ret['created_at'] = ret['created_at'].isoformat()
         return jsonpify(ret)
